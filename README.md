@@ -6,25 +6,31 @@
 - Bowtie2 (removing Phix reads)
 - python scripts
 
-##2) Demultiplexing
-------------------
-- QIIME or USEARCH 
-
-##3) read merging;
+##2) read assembly
 ----------------
 - USEARCH/VSEARCH
 - FastQC
 
-##4) quality filtering and trimming
-----------------------------------
+##3) Demultiplexing
+------------------
+- QIIME or USEARCH 
+
+##4) stripping primers and adapters
 - USEARCH
+
+##5) stats results
+- USEARCH/VSEARCH
+
+##6 quality filtering and trimming
+----------------------------------
+- USEARCH/VSEARCH
 - FastQC
 
-##5) Clustering OTUs and Generating ESV (Exact Sequence Variants)
+##7 Clustering OTUs and Generating ESV (Exact Sequence Variants)
 -----------------------------------------------------------------
 - USEARCH (UPARSE and UNOISE3 algorithms)
 
-##6) taxonomy assignments
+##8 taxonomy assignments
 -------------------------
 - CONSTAX (we developed this tool that generates a consensus taxonomy for ITS amplicon reads, please have a look https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1952-x
 It is completely integrated in the HPCC and people can run it in there
