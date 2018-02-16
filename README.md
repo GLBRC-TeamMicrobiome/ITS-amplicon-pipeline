@@ -16,9 +16,11 @@
 - QIIME or USEARCH 
 
 ##4) stripping primers and adapters
+-----------------------------------
 - USEARCH
 
 ##5) stats results
+------------------
 - USEARCH/VSEARCH
 
 ##6 quality filtering and trimming
