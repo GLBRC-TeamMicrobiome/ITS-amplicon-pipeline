@@ -101,7 +101,7 @@ Download the most recent version of the [UNITE](https://unite.ut.ee/repository.p
 Generate separated database.fasta and taxonomy.txt files using the custom script below, extracted form our the [CONSTAX tool](https://github.com/Gian77/COSTAX) 
 
 ```
-generaldb_to_RDPdb.py sh_general_release_dynamic_s_01.12.2017.fasta
+python generaldb_to_RDPdb.py sh_general_release_dynamic_s_01.12.2017.fasta
 
 ```
 Train the taxonomy using RDP scripts and run the java `classifier.jar`
