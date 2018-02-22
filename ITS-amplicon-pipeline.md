@@ -76,31 +76,55 @@ fastqc ./filtered.fastq
 ```
 ## 6) clustering and denoising (OTUs vs. ESV)
 
-### a) [clustering](https://www.drive5.com/usearch/manual/cmd_cluster_otus.html) at 97% 
+### a) generating [Exact Sequence Variants](https://www.drive5.com/usearch/manual/faq_uparse_or_unoise.html) (ESV) also called 0-radius OTUs
+
 ```
 mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastx_uniques filtered.fasta -fastaout uniques.fasta -sizeout
 /mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -unoise3 uniques.fasta -tabbedout unoise_zotus.txt -zotus zotus.fasta
 python python_scripts/fasta_number.py zotus.fasta OTU_ > zotus_numbered.fasta
 /mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -usearch_global assembled.fasta -db zotus_numbered.fasta -strand plus -id 0.97 -otutabout otu_table_ITS_UNOISE.txt
 ```
-### b) generating [Exact Sequence Variants](https://www.drive5.com/usearch/manual/faq_uparse_or_unoise.html) (ESV) also called 0-radius OTUs
+### b) [clustering](https://www.drive5.com/usearch/manual/cmd_cluster_otus.html) OTUs at 97% sequence similarity 
+
 ```
 /mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -cluster_otus uniques.fasta -minsize 2 -otus otus.fasta -uparseout uparse_otus.txt -relabel OTU_ --threads 20
 /mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -usearch_global assembled.fasta -db otus.fasta -strand plus -id 0.97 -otutabout otu_table_ITS_UPARSE.txt
 ```
+
 ## 7) Taxonomic classification using [CONSTAX](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1952-x) (or eventually RDP)
 
 ### a) for using CONSTAX refer to [this](https://github.com/natalie-vandepol/compare_taxonomy) link  
 We will incorporate SILVA database in CONSTAX (soon), so if you like we can definitely use it for all our datasets. More than creating a consensus taxonomy, it does some "cosmetic" work on the taxonomy table so that you will not need to do much after you have it imported in R.
 
-### b) for using RDP
-
-You need a python script to format the DB to be read by RDP - I am working on it. I have it embedded in the CONSTAX tool so it will not be hard to extract it from there and make it to work.
+### b) for using [RDP](https://github.com/rdpstaff/classifier) Classifier
+Download the most recent version of the [UNITE](https://unite.ut.ee/repository.php) database - general fasta format
+Generate separated database.fasta and taxonomy.txt files using the custom script below, extracted form our the [CONSTAX tool](https://github.com/Gian77/COSTAX) 
 
 ```
-java -Xmx10g -jar /RDPTools/classifier.jar train -o training_files -s DB/${base}__RDP_trained.fasta -t DB/${base}__RDP_taxonomy_trained.txt
+generaldb_to_RDPdb.py sh_general_release_dynamic_s_01.12.2017.fasta```
 
-cp /RDPTools/mytrained/rRNAClassifier.properties training_files/.
-
-java -Xmx10g -jar /RDPTools/classifier.jar classify --conf $conf --format allrank --train_propfile training_files/rRNAClassifier.properties -o taxonomy_assignments/otu_taxonomy.rdp otus/$otu_file
 ```
+Train the taxonomy using RDP scripts and run the java `classifier.jar`
+```
+python lineage2taxTrain.py sh_general_release_dynamic_s_01.12.2017__RDP_taxonomy.txt > sh_general_release_dynamic_s_01.12.2017__RDP_taxonomy_trained.txt
+
+python addFullLineage.py sh_general_release_dynamic_s_01.12.2017__RDP_taxonomy.txt sh_general_release_dynamic_s_01.12.2017__RDP.fasta > sh_general_release_dynamic_s_01.12.2017__RDP_trained.fasta
+
+java -Xmx32000m -jar /mnt/research/rdp/public/RDPTools/classifier.jar train -o training_files -s sh_general_release_dynamic_s_01.12.2017__RDP_trained.fasta -t sh_general_release_dynamic_s_01.12.2017__RDP_taxonomy_trained.txt
+
+```
+Copy the properties file in your `training_files/` folder
+```
+cd /mnt/research/rdp/public/RDPTools/classifier/samplefiles/
+cp rRNAClassifier.properties /path-to-files/training_files/.
+```
+
+Assign taxonmy IDs to your otus.fasta file
+```
+java -Xmx32000m -jar /mnt/research/rdp/public/RDPTools/classifier.jar classify --conf 0.8 --format allrank --train_propfile training_files/rRNAClassifier.properties -o otus_taxonomy.txt ../path-to-files/otus.fasta
+```
+
+
+
+
+
