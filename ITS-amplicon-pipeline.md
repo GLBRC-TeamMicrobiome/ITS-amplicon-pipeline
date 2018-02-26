@@ -113,7 +113,7 @@ python addFullLineage.py sh_general_release_dynamic_s_01.12.2017__RDP_taxonomy.t
 java -Xmx32000m -jar /mnt/research/rdp/public/RDPTools/classifier.jar train -o training_files -s sh_general_release_dynamic_s_01.12.2017__RDP_trained.fasta -t sh_general_release_dynamic_s_01.12.2017__RDP_taxonomy_trained.txt
 
 ```
-Copy the properties file in your `training_files/` folder
+Copy the `rRNAClassifier.properties` file in your `training_files/` folder
 ```
 cd /mnt/research/rdp/public/RDPTools/classifier/samplefiles/
 cp rRNAClassifier.properties /path-to-files/training_files/.
