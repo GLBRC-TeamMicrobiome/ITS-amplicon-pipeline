@@ -16,9 +16,14 @@ fastqc ./raw_reads_R1.fastq.gz raw_reads_R2.fastq.gz -o stats && rm -rf raw_read
 ```
 
 ### c) filtering out Phyax reads using [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
+The loop is generated on the R1 (and R2 if you are also using the reverse read file) word contained in the read file names, which is present in all the forward (or reverse if R2) read files.
 ```
+ls *.fastq.gz > fastq_raw.list
+while read R1
+do read R2
 mkdir no_phix
 bowtie2 -x phix_index/my_phix -U $R1 -t -p 20 --un no_phix/$R1.nophix.fastq -S /no_phix/$R1.contaminated_align.sam 2> no_phix/$R1.nophix.log
+done < fastq_raw.list
 ```
 
 ### d) re-sync fwd and rew reads
