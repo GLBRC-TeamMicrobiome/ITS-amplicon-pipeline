@@ -15,7 +15,7 @@ cat *R1_001.fastq.gz > raw_reads_R1.fastq.gz; cat *R2_001.fastq.gz > raw_reads_R
 fastqc ./raw_reads_R1.fastq.gz raw_reads_R2.fastq.gz -o stats && rm -rf raw_reads_R1.fastq.gz raw_reads_R2.fastq.gz
 ```
 
-### c) filtering out Phyax reads using [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
+### c) filtering out Phix reads using [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
 The loop is generated on the R1 (and R2 if you are also using the reverse read file) word contained in the read file names, which is present in all the forward (or reverse if R2) read files.
 ```
 ls *.fastq.gz > fastq_raw.list
@@ -128,8 +128,3 @@ Assign taxonmy IDs to your otus.fasta file
 ```
 java -Xmx32000m -jar /mnt/research/rdp/public/RDPTools/classifier.jar classify --conf 0.8 --format allrank --train_propfile training_files/rRNAClassifier.properties -o otus_taxonomy.txt ../path-to-files/otus.fasta
 ```
-
-
-
-
-
