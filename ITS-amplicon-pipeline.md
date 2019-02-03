@@ -73,7 +73,9 @@ rm stripped.fastq: rm stripped.fasta
 ## 4) getting stats using USEARCH and [VSEARCH](https://github.com/torognes/vsearch)
 
 ```
+for fastq in *_R1.fastq
 /mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastq_filter $fastq -fastq_stripleft 45 -fastqout -fastqout ${fastq//_R1.fastq/.trimmed.fastq}
+done
 
 cat *trimmed.fastq > trimmed.fastq
 
@@ -84,7 +86,7 @@ vsearch -fastq_stats trimmed.fastq -log stats_results_VSEARCH.txt
 ## 5) filtering, trimming, and quality check
 
 ```
-for fastq in *_R1.fastq
+for fastq in *trimmed.fastq
 do /mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastq_filter $fastq -fastq_maxee 1 -fastq_trunclen 250 -fastq_maxns 0 -fastqout ${fastq//_R1.fastq/.filtered.fastq} -fastaout ${fastq//_R1.fastq/.filtered.fasta} 
 done
 
