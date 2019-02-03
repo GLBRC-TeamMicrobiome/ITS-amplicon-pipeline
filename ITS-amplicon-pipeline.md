@@ -61,13 +61,25 @@ for fastq in *.fastq
 do cutadapt -g ^$fwd -a $revcomp$ -f fastq -n 2 --discard-untrimmed --match-read-wildcards -o ${fastq//.fastq/.stripped.fastq} $fastq
 done
 ```
+## 3.1) check reads for conserved region - it would be good to trim it out [seqtk](https://github.com/lh3/seqtk)
+
+```
+cat *stripped.fastq > stripped.fastq
+seqtk sample -s100 stripped.fastq 500 > sub_stripped.fastq
+seqtk seq -aQ64 sub_stripped.fastq > sub_stripped.fasta
+rm stripped.fastq: rm stripped.fasta
+```
 
 ## 4) getting stats using USEARCH and [VSEARCH](https://github.com/torognes/vsearch)
 
 ```
-vsearch -fastq_stats assembled.fastq -log stats_results_VSEARCH.txt
-/mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastq_eestats2 assembled.fastq -output stats_eestats2_USEARCH.txt -length_cutoffs 100,500,1
-/mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastx_info assembled.fastq -secs 5 -output stats_fastxinfo_USEARCH.txt
+/mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastq_filter $fastq -fastq_stripleft 45 -fastqout -fastqout ${fastq//_R1.fastq/.trimmed.fastq}
+
+cat *trimmed.fastq > trimmed.fastq
+
+vsearch -fastq_stats trimmed.fastq -log stats_results_VSEARCH.txt
+/mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastq_eestats2 trimmed.fastq -output eestats2_USEARCH.txt -length_cutoffs 100,500,1
+/mnt/research/rdp/public/thirdParty/usearch10.0.240_i86linux64 -fastx_info trimmed.fastq -secs 5 -output fastxinfo_USEARCH.txt
 ```
 ## 5) filtering, trimming, and quality check
 
@@ -99,7 +111,7 @@ python python_scripts/fasta_number.py zotus.fasta OTU_ > zotus_numbered.fasta
 ## 7) Taxonomic classification using [CONSTAX](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1952-x) (or eventually RDP)
 
 ### a) for using CONSTAX refer to [this](https://github.com/natalie-vandepol/compare_taxonomy) link  
-We will incorporate SILVA database in CONSTAX (soon), so if you like we can definitely use it for all our datasets. More than creating a consensus taxonomy, it does some "cosmetic" work on the taxonomy table so that you will not need to do much after you have it imported in R.
+We will incorporate SILVA (or more easily the RDP rep_set) database in CONSTAX, so if you like we can definitely use it for all our datasets. More than creating a consensus taxonomy, it does some "cosmetic" work on the taxonomy table so that you will not need to do much after you have it imported in R.
 
 ### b) for using [RDP](https://github.com/rdpstaff/classifier) Classifier
 Download the most recent version of the [UNITE](https://unite.ut.ee/repository.php) database - general fasta format
